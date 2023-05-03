@@ -54,7 +54,7 @@ function getStrokes(c) {
 function calculateCompatibilityScore(strokes1, strokes2) {
   // 이름 궁합 계산하는 함수
   const ratio = strokes1 / strokes2;
-  const compatibility = Math.round(100 * Math.min(ratio, 1/ratio));
+  const compatibility = Math.round(100 * Math.min(Math.max(ratio, 1/ratio), 1));
   return compatibility;
 }
 
