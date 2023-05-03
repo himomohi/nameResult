@@ -8,30 +8,26 @@ function calculateCompatibility(event) {
   const name1 = document.querySelector('#name1').value.trim();
   const name2 = document.querySelector('#name2').value.trim();
 
-  // 이름 길이 구하기
-  const nameLength1 = name1.length;
-  const nameLength2 = name2.length;
-
   // 이름 획수 구하기
   let strokes1 = 0;
   let strokes2 = 0;
 
-  for (let i = 0; i < nameLength1; i++) {
+  for (let i = 0; i < name1.length; i++) {
     const c = name1.charAt(i);
     if (/[ㄱ-ㅎㅏ-ㅣ가-힣]/.test(c)) {
       strokes1 += getStrokes(c);
     }
   }
 
-  for (let i = 0; i < nameLength2; i++) {
+  for (let i = 0; i < name2.length; i++) {
     const c = name2.charAt(i);
     if (/[ㄱ-ㅎㅏ-ㅣ가-힣]/.test(c)) {
       strokes2 += getStrokes(c);
     }
   }
 
-  // 이름 궁합 계산하기
-  const compatibility = calculateCompatibilityScore(name1, name2, nameLength1, nameLength2, strokes1, strokes2);
+  // 이름 획수로 계산하기
+  const compatibility = calculateCompatibilityScore(strokes1, strokes2);
 
   // 결과 표시하기
   const resultText = `${name1}과(와) ${name2}의 궁합은 ${compatibility}% 입니다.`
@@ -55,35 +51,11 @@ function getStrokes(c) {
   }
 }
 
-function calculateCompatibilityScore(name1, name2, nameLength1, nameLength2, strokes1, strokes2) {
+function calculateCompatibilityScore(strokes1, strokes2) {
   // 이름 궁합 계산하는 함수
-  let score = 0;
-
-  // 글자수로 계산
-  if (nameLength1 === nameLength2) {
-    score += 20;
-  } else if (Math.abs(nameLength1 - nameLength2) === 1) {
-    score += 10;
-  }
-
-  // 획수로 계산
   const ratio = strokes1 / strokes2;
-  if (0.8 <= ratio && ratio <= 1.2) {
-    score += 40;
-  } else if (0.5 <= ratio && ratio <= 1.5) {
-    score += 30;
-  } else if (0.3 <= ratio && ratio <= 3) {
-    score += 20;
-  } else {
-    score += 10;
-  }
+  const compatibility = Math.round(100 * Math.min(ratio, 1/ratio));
+  return compatibility;
+}
 
-  // 유래로 계산
-  if (name1.charAt() === name2.charAt(0)) {
-        score += 10;
-        }
-        
-        return score;
-    }
-    
-    form.addEventListener('submit', calculateCompatibility);
+form.addEventListener('submit', calculateCompatibility);
