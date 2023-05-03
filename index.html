@@ -4,23 +4,19 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-
-  <title>이름 궁합 판단기</title>
+  <title>한글 이름 궁합 판단기</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
 </head>
 
 <body>
   <div class="container">
     <h1>Name Result</h1>
-
     <div class="container">
       <form>
         <label for="name1">이름 1:</label>
         <input type="text" id="name1" name="name1" required>
-
         <label for="name2">이름 2:</label>
         <input type="text" id="name2" name="name2" required>
-
         <button type="submit">결과 확인</button>
       </form>
       <div id="result" class="result"></div>
@@ -33,8 +29,8 @@
     function calculateCompatibility(event) {
       event.preventDefault();
 
-      const name1 = document.querySelector('#name1').value.trim().toUpperCase();
-      const name2 = document.querySelector('#name2').value.trim().toUpperCase();
+      const name1 = document.querySelector('#name1').value.trim();
+      const name2 = document.querySelector('#name2').value.trim();
 
       const compatibility = calculateCompatibilityScore(name1, name2);
 
@@ -43,40 +39,36 @@
     }
 
     function calculateCompatibilityScore(name1, name2) {
-      const name1Strokes = getStrokeCount(name1);
-      const name2Strokes = getStrokeCount(name2);
+      const alphabetScore = {
+        "ㄱ": 2, "ㄴ": 2, "ㄷ": 3, "ㄹ": 5, "ㅁ": 4, "ㅂ": 4, "ㅅ": 2, "ㅇ": 1, "ㅈ": 3, "ㅊ": 4, "ㅋ": 3, "ㅌ": 4, "ㅍ": 4, "ㅎ": 3,
+        "ㅏ": 2, "ㅑ": 3, "ㅓ": 2, "ㅕ": 3, "ㅗ": 2, "ㅛ": 3, "ㅜ": 2, "ㅠ": 3, "ㅡ": 1, "ㅣ": 1, "ㅐ": 3, "ㅒ": 4, "ㅔ": 3, "ㅖ": 4, "ㅘ": 4, "ㅙ": 5, "ㅚ": 4, "ㅝ": 4, "ㅞ": 5, "ㅟ": 3, "ㅢ": 2
+      };
 
-      const totalStrokes = name1Strokes + name2Strokes;
-      const score = totalStrokes % 10;
+      const name1Upper = name1.toUpperCase();
+      const name2Upper = name2.toUpperCase();
 
-      let compatibility = Math.abs(score) * 10;
-
-      if (compatibility < 30) {
-        compatibility = 30;
-      } else if (compatibility > 100) {
-        compatibility = 100;
+      let compatibilityStr = '';
+      const minLength = Math.min(name1Upper.length, name2Upper.length);
+      for (let i = 0; i < minLength; i++) {
+        compatibilityStr += name1Upper.charAt(i) + name2Upper.charAt(i) in alphabetScore ? alphabetScore[name1Upper.charAt(i)] + alphabetScore[name2Upper.charAt(i)] : 0;
       }
+
+      compatibilityStr += minLength === name1Upper.length ? name2Upper.slice(minLength) : name1Upper.slice(minLength);
+
+      let scores = Array.from(compatibilityStr, char => (char in alphabetScore) ? alphabetScore[char] : 0);
+      while (scores.length > 2) {
+        scores = scores.reduce((newScores, score, index) => {
+          if (index === scores.length - 1) {
+            return newScores;
+          }
+          newScores.push((score + scores[index + 1]) % 10);
+          return newScores;
+        }, []);
+      }
+
+      const compatibility = parseInt(scores.join(''), 10);
 
       return compatibility;
-    }
-
-    function getStrokeCount(name) {
-      let totalStrokes = 0;
-
-      for (const char of name) {
-        const strokes = getKoreanCharacterStrokeCount(char);
-        totalStrokes += strokes;
-      }
-
-      return totalStrokes;
-    }
-
-    function getKoreanCharacterStrokeCount(char) {
-      const strokeData = {
-        "ㄱ": 2, "ㄴ": 2, "ㄷ": 3, "ㄹ": 5, "ㅁ": 4, "ㅂ": 4, "ㅅ": 2, "ㅇ": 1, "ㅈ": 3, "ㅊ": 4, "ㅋ": 3, "ㅌ": 4, "ㅍ": 4, "ㅎ": 3,
-        "ㅏ": 2, "ㅑ": 3, "ㅓ": 2, "ㅕ": 3, "ㅗ": 2, "ㅛ": 3, "ㅜ": 2, "ㅠ": 3, "ㅡ": 1, "ㅣ": 1, "ㅐ": 3, "ㅒ": 4, "ㅔ": 4, "ㅖ": 4, "ㅘ": 4, "ㅙ": 5, "ㅚ": 4, "ㅝ": 4, "ㅞ": 5, "ㅟ": 3, "ㅢ": 2
-      };
-      return strokeData[char] || 0;
     }
 
     form.addEventListener('submit', calculateCompatibility);
