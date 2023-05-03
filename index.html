@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html data-theme="dark">
+  <head>
+    <meta charset="utf-8">
+    <title>이름 궁합 판단기</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+
+  </head>
+  <body>
+    <div class="container">
+      <h1>Name Result</h1>
+      
+      <div class="container">
+      <form>
+        <label for="name1">이름 1:</label>
+        <input type="text" id="name1" name="name1" required>
+
+        <label for="name2">이름 2:</label>
+        <input type="text" id="name2" name="name2" required>
+
+        <button type="submit">결과 확인</button>
+      </form>
+      <div id="result" class="result"></div>
+    </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
