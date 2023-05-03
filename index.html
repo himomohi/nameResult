@@ -1,90 +1,80 @@
 <!DOCTYPE html>
 <html data-theme="dark">
-
-<head>
-  <meta charset="utf-8">
-  <title>이름 궁합 판단기</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
-</head>
-
-<body>
-  <div class="container">
-    <h1>Name Result</h1>
-
+  <head>
+    <meta charset="utf-8">
+    <title>이름 궁합 판단기</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+  </head>
+  <body>
     <div class="container">
-      <form>
-        <label for="name1">이름 1:</label>
-        <input type="text" id="name1" name="name1" required>
+      <h1>Name Result</h1>
 
-        <label for="name2">이름 2:</label>
-        <input type="text" id="name2" name="name2" required>
+      <div class="container">
+        <form>
+          <label for="name1">이름 1:</label>
+          <input type="text" id="name1" name="name1" required>
 
-        <button type="submit">결과 확인</button>
-      </form>
-      <div id="result" class="result"></div>
+          <label for="name2">이름 2:</label>
+          <input type="text" id="name2" name="name2" required>
+
+          <button type="submit">결과 확인</button>
+        </form>
+        <div id="result" class="result"></div>
+      </div>
     </div>
-  </div>
-  <script>
-    const form = document.querySelector('form');
-    const resultDiv = document.querySelector('#result');
+    <script>
+      const form = document.querySelector('form');
+      const resultDiv = document.querySelector('#result');
 
-    function calculateCompatibility(event) {
-      event.preventDefault();
+      function calculateCompatibility(event) {
+        event.preventDefault();
 
-      const name1 = document.querySelector('#name1').value.trim();
-      const name2 = document.querySelector('#name2').value.trim();
+        const name1 = document.querySelector('#name1').value.trim();
+        const name2 = document.querySelector('#name2').value.trim();
 
-      const compatibility = calculateCompatibilityScore(name1, name2);
+        const compatibility = calculateCompatibilityScore(name1, name2);
 
-      const resultText = `${name1}과(와) ${name2}의 궁합은 ${compatibility}% 입니다.`;
-      resultDiv.textContent = resultText;
-    }
-
-    form.addEventListener('submit', calculateCompatibility);
-
-    function decomposeKoreanSyllable(syllable) {
-      const initialConsonants = [
-        'ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅃ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'
-      ];
-      const medialVowels = [
-        'ㅏ', 'ㅐ', 'ㅑ', 'ㅒ', 'ㅓ', 'ㅔ', 'ㅕ', 'ㅖ', 'ㅗ', 'ㅘ', 'ㅙ', 'ㅚ', 'ㅛ', 'ㅜ', 'ㅝ', 'ㅞ', 'ㅟ', 'ㅠ', 'ㅡ', 'ㅢ', 'ㅣ'
-      ];
-      const finalConsonants = [
-        '', 'ㄱ', 'ㄲ', 'ㄳ', 'ㄴ', 'ㄵ', 'ㄶ', 'ㄷ', 'ㄹ', 'ㄺ', 'ㄻ', 'ㄼ', 'ㄽ', 'ㄾ', 'ㄿ', 'ㅀ', 'ㅁ', 'ㅂ', 'ㅄ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'
-      ];
-
-      const code = syllable.charCodeAt(0) - 0xAC00;
-
-      const initialConsonantIndex = Math.floor(code / (21 * 28));
-      const medialVowelIndex = Math.floor((code % (21 * 28)) / 28);
-      const finalConsonantIndex = code % 28;
-
-      const initial = initialConsonants[initialConsonantIndex];
-      const medial = medialVowels[medialVowelIndex];
-      const final = finalConsonants[finalConsonantIndex];
-
-      return [initial, medial, final];
-    }
-
-    function calculateCompatibilityScore(name1, name2) {
-      let totalScore1 = 0;
-      let totalScore2 = 0;
-
-      for (const char of name1) {
-        const [initial, medial, final] = decomposeKoreanSyllable(char);
-        totalScore1 += initial.charCodeAt(0) + medial.charCodeAt(0) + (final ? final.charCodeAt(0) : 0);
+        const resultText = `${name1}과(와) ${name2}의 궁합은 ${compatibility}% 입니다.`;
+        resultDiv.textContent = resultText;
       }
 
-      for (const char of name2) {
-        const [initial, medial, final] = decomposeKoreanSyllable(char);
-        totalScore2 += initial.charCodeAt(0) + medial.charCodeAt(0) + (final ? final.charCodeAt(0) : 0);
+      function calculateCompatibilityScore(name1, name2) {
+        const name1Strokes = getStrokeCount(name1);
+        const name2Strokes = getStrokeCount(name2);
+
+        const score = (name1Strokes + name2Strokes) % 100;
+        const compatibility = Math.abs(score);
+
+        return compatibility;
       }
 
-      const compatibility = Math.round(Math.abs(totalScore1 - totalScore2) * 100 / (totalScore1 + totalScore2));
+      function getStrokeCount(name) {
+        let totalStrokes = 0;
 
-      return compatibility;
-    }
-  </script>
-</body>
+        for (const char of name) {
+          const strokes = getKoreanCharacterStrokeCount(char);
+          if (strokes) {
+            totalStrokes += strokes;
+          } else {
+            totalStrokes += 1;
+          }
+        }
 
+        return totalStrokes;
+      }
+
+      function getKoreanCharacterStrokeCount(char) {
+        const strokeData = {
+          "ㄱ": 2, "ㄴ": 2, "ㄷ": 3, "ㄹ": 5, "ㅁ": 4, "ㅂ": 4, "ㅅ": 2, "ㅇ": 1, "ㅈ": 3, "ㅊ": 4, "ㅋ": 3, "ㅌ": 4, "ㅍ": 4, "ㅎ": 3,
+          "ㅏ": 2, "ㅑ": 3, "ㅓ": 2, "ㅕ": 3, "ㅗ": 2, "ㅛ": 3, "ㅜ": 2, "ㅠ": 3, "ㅡ": 1, "ㅣ": 1, "ㅐ": 3, "ㅒ": 4, "ㅔ": 3, "ㅖ": 4, "ㅘ": 4, "ㅙ": 5, "ㅚ": 4, "ㅝ": 4, "ㅞ": 5, "ㅟ": 3, "ㅢ": 2
+        };
+
+        return strokeData[char] || 0;
+      }
+
+      form.addEventListener('submit', calculateCompatibility);
+    </script>
+  </body>
 </html>
+
+         
