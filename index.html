@@ -4,25 +4,45 @@
     <meta charset="utf-8">
     <title>이름 궁합 판단기</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
-
   </head>
   <body>
     <div class="container">
       <h1>Name Result</h1>
-      
+
       <div class="container">
-      <form>
-        <label for="name1">이름 1:</label>
-        <input type="text" id="name1" name="name1" required>
+        <form>
+          <label for="name1">이름 1:</label>
+          <input type="text" id="name1" name="name1" required>
 
-        <label for="name2">이름 2:</label>
-        <input type="text" id="name2" name="name2" required>
+          <label for="name2">이름 2:</label>
+          <input type="text" id="name2" name="name2" required>
 
-        <button type="submit">결과 확인</button>
-      </form>
-      <div id="result" class="result"></div>
+          <button type="submit">결과 확인</button>
+        </form>
+        <div id="result" class="result"></div>
+      </div>
     </div>
-    </div>
+    <script>
+      const form = document.querySelector('form');
+      const resultDiv = document.querySelector('#result');
+
+      function calculateCompatibility(event) {
+        event.preventDefault();
+
+        const name1 = document.querySelector('#name1').value.trim();
+        const name2 = document.querySelector('#name2').value.trim();
+
+        const compatibility = calculateCompatibilityScore(name1, name2);
+
+        const resultText = `${name1}과(와) ${name2}의 궁합은 ${compatibility}% 입니다.`;
+        resultDiv.textContent = resultText;
+      }
+
+      form.addEventListener('submit', calculateCompatibility);
+
+      // 이전에 작성한 calculateCompatibilityScore, decomposeKoreanSyllable 함수를 여기에 추가해주세요.
+    
+    </script>
     <script src="script.js"></script>
   </body>
 </html>
